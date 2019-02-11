@@ -5,7 +5,20 @@ Globals:
   Api:
     EndpointConfiguration: REGIONAL
 
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+
 Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: 
+        Ref: Stage
+      Variables:
+        Stage:
+          Ref: Stage
   MyServiceFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -17,11 +30,15 @@ Resources:
       Timeout: 30
       Environment: 
         Variables:
-          SPRING_PROFILES_ACTIVE: aws1
+          # Specify here variables for deployment,
+          # override local using sam-local-env.json
+          SPRING_PROFILES_ACTIVE: aws
       Events:
         GetResource:
           Type: Api
           Properties:
+            RestApiId: 
+              Ref: ApiGatewayApi
             Path: /ping
             Method: GET
         CheckWebsiteScheduledEvent:
@@ -32,6 +49,6 @@ Resources:
 Outputs:
   MyServiceApi:
     Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping'
+    Value: !Sub 'https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping'
     Export:
       Name: MyServiceApi

@@ -16,7 +16,7 @@ dependencies {
     exclude group: 'org.slf4j'
   }
   compile('org.slf4j:slf4j-api:1.7.25')
-  //compile('io.symphonia:lambda-logging:1.0.1:no-config')
+  compile('io.symphonia:lambda-logging:1.0.1:no-config')
 
   testCompile("junit:junit:4.12")
 }

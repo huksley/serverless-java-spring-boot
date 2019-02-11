@@ -11,3 +11,4 @@ build
 target
 output-sam.yaml
 .vscode
+sam-package.yml
