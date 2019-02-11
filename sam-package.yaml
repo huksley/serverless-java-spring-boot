@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS Serverless Spring Boot 2 API - my.service::my-service
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+Outputs:
+  MyServiceApi:
+    Description: URL for application
+    Export:
+      Name: MyServiceApi
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping
+Resources:
+  MyServiceFunction:
+    Properties:
+      CodeUri: s3://sam-test-deploy-vi6vah6oom/java/3e0560ad71a70d217d2750ea22f18da4
+      Events:
+        CheckWebsiteScheduledEvent:
+          Properties:
+            Schedule: rate(5 minutes)
+          Type: Schedule
+        GetResource:
+          Properties:
+            Method: GET
+            Path: /ping
+          Type: Api
+      Handler: my.service.StreamLambdaHandler::handleRequest
+      MemorySize: 256
+      Policies: AWSLambdaBasicExecutionRole
+      Runtime: java8
+      Timeout: 30
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

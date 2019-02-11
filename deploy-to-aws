@@ -1,6 +1,31 @@
 #!/bin/bash
-aws cloudformation package --template-file sam.yaml --output-template-file output-sam.yaml --s3-bucket sam-test-deploy-vi6vah6oom
+./gradlew build
+PACKAGE=build/distributions/serverless-java-spring-boot.zip
+NAME=`basename $PACKAGE`
 
-aws cloudformation deploy --template-file output-sam.yaml --stack-name ServerlessSpringApi --capabilities CAPABILITY_IAM
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+eval $(parse_yaml sam-template.yaml)
+
+#aws s3 cp $PACKAGE s3://sam-test-deploy-vi6vah6oom/$NAME
+
+aws cloudformation package --template-file sam-template.yaml --s3-bucket sam-test-deploy-vi6vah6oom --s3-prefix java --output-template-file sam-package.yaml
+
+aws cloudformation deploy --template-file sam-package.yaml --stack-name ServerlessSpringApi --capabilities CAPABILITY_IAM
 
 aws cloudformation describe-stacks --stack-name ServerlessSpringApi

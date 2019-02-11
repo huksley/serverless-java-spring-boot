@@ -11,16 +11,19 @@ Resources:
     Properties:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
-      CodeUri: target/my-service-1.0-SNAPSHOT-lambda-package.zip
+      CodeUri: "build/distributions/serverless-java-spring-boot.zip"
       MemorySize: 256
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
+      Environment: 
+        Variables:
+          SPRING_PROFILES_ACTIVE: aws1
       Events:
         GetResource:
           Type: Api
           Properties:
-            Path: /{proxy+}
-            Method: any
+            Path: /ping
+            Method: GET
         CheckWebsiteScheduledEvent:
           Type: Schedule
           Properties:

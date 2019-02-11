@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sam local start-api --debug --skip-pull-image -s public -t sam-template.yaml -p 3000 -n sam-local-env.json
+

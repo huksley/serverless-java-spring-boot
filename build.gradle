@@ -1,6 +1,7 @@
 plugins {
   id 'org.springframework.boot' version '2.1.1.RELEASE'
 }
+
 apply plugin: 'java'
 
 repositories {
@@ -10,11 +11,12 @@ repositories {
 }
 
 dependencies {
-  compile (
-          'org.springframework.boot:spring-boot-starter-web:2.1.1.RELEASE',
-          'com.amazonaws.serverless:aws-serverless-java-container-spring:[1.0,)',
-          'io.symphonia:lambda-logging:1.0.1'
-  )
+  compile('org.springframework.boot:spring-boot-starter-web:2.1.1.RELEASE')
+  compile('com.amazonaws.serverless:aws-serverless-java-container-spring:[1.0,)') {
+    exclude group: 'org.slf4j'
+  }
+  compile('org.slf4j:slf4j-api:1.7.25')
+  //compile('io.symphonia:lambda-logging:1.0.1:no-config')
 
   testCompile("junit:junit:4.12")
 }

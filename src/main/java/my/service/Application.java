@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import my.service.controller.PingController;
 
-
 @SpringBootApplication
 // We use direct @Import instead of @ComponentScan to speed up cold starts
 // @ComponentScan(basePackages = "my.service.controller")
@@ -26,7 +25,8 @@ import my.service.controller.PingController;
 public class Application extends SpringBootServletInitializer {
 
     /*
-     * Create required HandlerMapping, to avoid several default HandlerMapping instances being created
+     * Create required HandlerMapping, to avoid several default HandlerMapping
+     * instances being created
      */
     @Bean
     public HandlerMapping handlerMapping() {
@@ -34,7 +34,8 @@ public class Application extends SpringBootServletInitializer {
     }
 
     /*
-     * Create required HandlerAdapter, to avoid several default HandlerAdapter instances being created
+     * Create required HandlerAdapter, to avoid several default HandlerAdapter
+     * instances being created
      */
     @Bean
     public HandlerAdapter handlerAdapter() {

@@ -23,8 +23,10 @@ mvn archetype:generate \
 To run function locally use
 
 ```bash
-npm install -g aws-sam-local
-sam local start-api --template sam.yaml
+pip install --user aws-sam-cli
+./gradlew build -x test
+sam local start-api --debug --skip-pull-image -s public -t sam.yaml -p 3000 \
+    --parameter-overrides ParameterKey=CodeUri,ParameterValue=build/distributions/serverless-java-spring-boot.zip
 ```
 
 Try API endpoint in terminal or browser

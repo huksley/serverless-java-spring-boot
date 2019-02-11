@@ -1,0 +1,5 @@
+{
+  "MyServiceFunction":{
+    "SPRING_PROFILES_ACTIVE": "aws,local"
+  }
+}
