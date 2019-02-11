@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Matthias Gr?ter <matthias.gruter@transmode.com>
+#set -x
+
+function find_wcroot()
+{
+    # Return 0 & output working copy root path if the current directory
+    # is a subversion or git working area. Otherwise return 1.
+
+    SVNROOT="$( svn info --xml --incremental 2> /dev/null | xmllint  --xpath '//wcroot-abspath/text()' - 2> /dev/null )"
+    [[ ! -z $SVNROOT ]] && { echo "$SVNROOT"; return 0; }
+    
+    GITROOT="$( git rev-parse --show-toplevel 2> /dev/null )"
+    [[ ! -z $GITROOT ]] && { echo "$GITROOT"; return 0; }
+    
+    return 1
+}
+
+WCROOT=$( find_wcroot )
+# if gradle wrapper exists use it, otherwise use gradle from system path
+[[ -f "$WCROOT/gradlew" ]] && CMD="$WCROOT/gradlew" || CMD="gradle"
+
+$CMD "$@"

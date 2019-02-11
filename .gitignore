@@ -1,0 +1,11 @@
+.attach*
+.classpath
+.project
+.gradle
+.settings
+# VSCOde editor generates this ffs
+bin
+# Gradle
+build
+# Maven
+target
