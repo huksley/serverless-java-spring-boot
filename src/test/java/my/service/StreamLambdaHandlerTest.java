@@ -6,6 +6,7 @@ import com.amazonaws.serverless.proxy.internal.testutils.AwsProxyRequestBuilder;
 import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -34,7 +36,7 @@ public class StreamLambdaHandlerTest {
     }
 
     @Test
-    public void ping_streamRequest_respondsWithHello() {
+    public void ping_streamRequest_respondsWithHello() throws IOException {
         InputStream requestStream = new AwsProxyRequestBuilder("/ping", HttpMethod.GET)
                                             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
                                             .buildStream();
@@ -47,9 +49,14 @@ public class StreamLambdaHandlerTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatusCode());
 
         assertFalse(response.isBase64Encoded());
+        
+        // Check it is parseable
+        String json = response.getBody();
+        ObjectMapper om = new ObjectMapper();
+        om.readValue(json, Map.class);
 
-        assertTrue(response.getBody().contains("pong"));
-        assertTrue(response.getBody().contains("Hello, World!"));
+        assertTrue(json.contains("pong"));
+        assertTrue(json.contains("Hello, World!"));
 
         assertTrue(response.getMultiValueHeaders().containsKey(HttpHeaders.CONTENT_TYPE));
         assertTrue(response.getMultiValueHeaders().getFirst(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.APPLICATION_JSON));
