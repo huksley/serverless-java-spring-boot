@@ -9,3 +9,4 @@ bin
 build
 # Maven
 target
+output-sam.yaml

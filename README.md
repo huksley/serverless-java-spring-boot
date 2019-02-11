@@ -1,4 +1,54 @@
 # my-service serverless API
+
+Generated using
+https://github.com/awslabs/aws-serverless-java-container/
+https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot
+
+## Generating this example
+
+This example were generated using following command
+
+```bash
+mvn archetype:generate -DgroupId=my.service -DartifactId=my-service -Dversion=1.0-SNAPSHOT        -DarchetypeGroupId=com.amazonaws.serverless.archetypes        -DarchetypeArtifactId=aws-serverless-springboot2-archetype        -DarchetypeVersion=1.3
+```
+
+## Running locally
+
+To run function locally use
+
+```bash
+npm install -g aws-sam-local
+sam local start-api --template sam.yaml
+```
+
+Try API endpoint in terminal or browser
+
+```
+curl -s http://127.0.0.1:3000/ping | json_pp
+```
+
+## Running in cloud
+
+Deploy to cloud using
+```bash
+./deploy-to-aws
+```
+
+Open URL provided in output, for example: https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping
+
+```bash
+curl -s https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping | json_pp
+{
+   "pong" : "Hello, World!"
+}
+```
+
+Bench time to run, notice that the first run with the same or more concurrent number of requests takes 6 seconds (i.e. spring boot launch time)
+```bash
+ab -n 100 -c 20 https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping
+```
+
+## Template (FIXME: remove template README)
 The my-service project, created with [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container).
 
 The starter project defines a simple `/ping` resource that can accept `GET` requests with its tests.
