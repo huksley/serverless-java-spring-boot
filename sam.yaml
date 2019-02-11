@@ -12,7 +12,7 @@ Resources:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
       CodeUri: target/my-service-1.0-SNAPSHOT-lambda-package.zip
-      MemorySize: 512
+      MemorySize: 256
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
       Events:
@@ -21,6 +21,10 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: any
+        CheckWebsiteScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
 
 Outputs:
   MyServiceApi:

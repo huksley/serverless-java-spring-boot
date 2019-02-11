@@ -9,7 +9,13 @@ https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spri
 This example were generated using following command
 
 ```bash
-mvn archetype:generate -DgroupId=my.service -DartifactId=my-service -Dversion=1.0-SNAPSHOT        -DarchetypeGroupId=com.amazonaws.serverless.archetypes        -DarchetypeArtifactId=aws-serverless-springboot2-archetype        -DarchetypeVersion=1.3
+mvn archetype:generate \
+ -DgroupId=my.service \
+ -DartifactId=my-service \
+ -Dversion=1.0-SNAPSHOT \
+ -DarchetypeGroupId=com.amazonaws.serverless.archetypes \
+ -DarchetypeArtifactId=aws-serverless-springboot2-archetype \
+ -DarchetypeVersion=1.3
 ```
 
 ## Running locally
