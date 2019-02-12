@@ -11,4 +11,5 @@ build
 target
 output-sam.yaml
 .vscode
-sam-package.yml
+sam-package.yaml
+src/main/resources/git.json

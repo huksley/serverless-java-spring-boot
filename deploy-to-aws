@@ -1,5 +1,5 @@
 #!/bin/bash
-./gradlew build
+./gradlew clean compileJava assemble build
 PACKAGE=build/distributions/serverless-java-spring-boot.zip
 NAME=`basename $PACKAGE`
 

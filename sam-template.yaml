@@ -25,7 +25,7 @@ Resources:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
       CodeUri: "build/distributions/serverless-java-spring-boot.zip"
-      MemorySize: 256
+      MemorySize: 2048
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
       Environment: 
@@ -49,6 +49,6 @@ Resources:
 Outputs:
   MyServiceApi:
     Description: URL for application
-    Value: !Sub 'https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/ping'
+    Value: !Sub 'https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/ping'
     Export:
       Name: MyServiceApi

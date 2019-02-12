@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# Creates git.json with repository and deployment information
+# NOTE: CodePipeline strips .git directory, so only git information available is commit.id from CODEBUILD_RESOLVED_SOURCE_VERSION env var
+# 
+DST=${1:-src/main/resources}
+if [ -d .git ]; then
+    git log -1 --pretty=format:'{%n"commit.id": "%H",%n"commit.id.abbrev": "%h",%n"commit.user.name": "%an",%n"commit.user.email": "%ae",%n"commit.info":"%D",%n"commit.message": "%s",%n"commit.date": "%ai"%n}%n' | sed -E -e "s/^\* //g;s/^\| //g" > $DST/git.json
+else
+    if [ "$CODEBUILD_RESOLVED_SOURCE_VERSION" != "" ]; then
+      echo "{ \"commit.id\": \"$CODEBUILD_RESOLVED_SOURCE_VERSION\" }" > $DST/git.json
+    else
+      echo "{ \"empty\": true }" > $DST/git.json
+    fi
+fi
+
+NOW=`date +%Y-%m-%dT%H:%M:%S%z`
+HST=`hostname -f`
+
+
+platform='unknown'
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+   platform='linux'
+elif [[ "$unamestr" == 'FreeBSD' ]]; then
+   platform='freebsd'
+fi
+
+if [[ "$platform" == "unknown" ]]; then
+    # Probably MacOS X
+    sed -i bak -E  -e "s/^{/{ \"build.time\": \"$NOW\", \"build.user\": \"$USER\", \"build.host\": \"$HST\", /g" $DST/git.json
+elif [[ "$platform" == "freebsd" ]]; then
+    # Validate proper -i call
+    sed -i -E -e "s/^{/{ \"build.time\": \"$NOW\", \"build.user\": \"$USER\", \"build.host\": \"$HST\", /g" $DST/git.json
+else
+    sed -i -E -e "s/^\{/\{ \"build.time\": \"$NOW\", \"build.user\": \"$USER\", \"build.host\": \"$HST\", /g" $DST/git.json
+fi
