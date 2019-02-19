@@ -9,10 +9,15 @@ jobs:
       - image: circleci/openjdk:8u171
     steps:
       - checkout
-      - run: python --version
-      - run: sudo apt-get install -y python-pip libyaml-dev python-dev jq
-      - run: sudo pip install awscli
-      - run: sudo pip install aws-sam-cli
+      - run: 
+          name: Install AWS cli
+          command: |
+            python --version
+            cat /etc/issue
+            sudo apt-get update
+            sudo apt-get install -y python-pip
+            sudo pip install awscli
+            sudo pip install aws-sam-cli
       - run: ./gradlew build
       - save_cache:
           key: docs-{{ checksum "build.gradle" }}
