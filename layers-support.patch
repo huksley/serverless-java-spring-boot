@@ -1,0 +1,114 @@
+This patch introduces support for layers,
+however sam cli does not support it well, so it is not available here.
+
+Probably can be turned on later when using serverless framework for running locally.
+
+diff --git b/build.gradle a/build.gradle
+index 0dcc715..a50b21b 100644
+--- b/build.gradle
++++ a/build.gradle
+@@ -41,5 +41,22 @@ task buildZipFull(type: Zip) {
+     }
+    }
+ }
++ 
++task buildZipCode(type: Zip) {
++  baseName = "serverless-java-spring-boot-code"
++  from compileJava
++  from processResources
++}
++
++task buildLayerZip(type: Zip) {
++    baseName = "serverless-java-spring-boot-layer1"
++    into("java/lib") {
++        from(configurations.compileClasspath) {
++            exclude 'tomcat-embed-*'
++        }
++    }
++}
+ 
+ build.dependsOn buildZipFull
++build.dependsOn buildZipCode
++build.dependsOn buildLayerZip
+diff --git b/deploy-to-aws a/deploy-to-aws
+index 492b7c3..3f36579 100755
+--- b/deploy-to-aws
++++ a/deploy-to-aws
+@@ -22,9 +22,20 @@ function parse_yaml {
+ 
+ eval $(parse_yaml sam-template.yaml)
+ 
++#LAYER_PACKAGE=build/distributions/serverless-java-spring-boot-layer1.zip
++#LAYER_NAME=`basename $LAYER_PACKAGE`
++#
++#aws s3 cp $LAYER_PACKAGE s3://${S3_BUCKET}/$LAYER_NAME
++#aws lambda publish-layer-version --layer-name serverless-java-spring-boot-layer1 \
++#    --content S3Bucket=${S3_BUCKET},S3Key=${LAYER_NAME} \
++#    --compatible-runtimes java8
++#LAYER_ARN=`aws lambda list-layer-versions --layer-name serverless-java-spring-boot-layer1 --max-items 1 | jq ".LayerVersions[0].LayerVersionArn" -r`
++#echo "JAR layer ARN: ${LAYER_ARN}"
++
+ aws cloudformation package --template-file sam-template.yaml --s3-bucket ${S3_BUCKET} --s3-prefix java --output-template-file sam-package.yaml
+ 
+ PARAMS="SNSTopic=${SNS_TOPIC} SQSQueue=${SQS_QUEUE}"
++# CodeLayers=${LAYER_ARN}
+ 
+ aws cloudformation deploy --template-file sam-package.yaml --stack-name ServerlessSpringApi --parameter-overrides ${PARAMS} --capabilities CAPABILITY_IAM
+ 
+diff --git b/sam-local a/sam-local
+index 047b969..98d8748 100755
+--- b/sam-local
++++ a/sam-local
+@@ -1,4 +1,9 @@
+ #!/bin/bash
+ 
+-sam local start-api --debug --skip-pull-image -s public -t sam-template.yaml -p 3000 -n sam-local-env.json 
++LAYER_ARN=`aws lambda list-layer-versions --layer-name serverless-java-spring-boot-layer1 --max-items 1 | jq ".LayerVersions[0].LayerVersionArn" -r`
++echo "JAR layer ARN: ${LAYER_ARN}"
++
++PARAMS=ParameterKey=CodeLayers,ParameterValue=${LAYER_ARN}
++
++sam local start-api --debug --skip-pull-image -s public -t sam-template.yaml -p 3000 -n sam-local-env.json --parameter-overrides ${PARAMS}
+ 
+diff --git b/sam-template.yaml a/sam-template.yaml
+index 17a9b5f..6481466 100644
+--- b/sam-template.yaml
++++ a/sam-template.yaml
+@@ -14,6 +14,8 @@ Parameters:
+     Type: String
+   SQSQueue:
+     Type: String
++#  CodeLayers:
++#    Type: CommaDelimitedList
+ 
+ Resources:
+   ApiGatewayApi:
+@@ -24,16 +26,27 @@ Resources:
+       Variables:
+         Stage:
+           Ref: Stage
++  MyServiceLayer:
++    Type: AWS::Serverless::LayerVersion
++    Properties:
++      LayerName: serverless-java-spring-boot-layer1
++      ContentUri: "build/distributions/serverless-java-spring-boot-layer1.zip"
++      CompatibleRuntimes:
++        - java8
++      RetentionPolicy: Retain
+   MyServiceFunction:
+     Type: AWS::Serverless::Function
+     FunctionName: "ServerlessSpringApi-MyServiceFunction"
+     Properties:
+       Handler: my.service.StreamLambdaHandler::handleRequest
+       Runtime: java8
+-      CodeUri: "build/distributions/serverless-java-spring-boot.zip"
++      CodeUri: "build/distributions/serverless-java-spring-boot-code.zip"
+       MemorySize: 2048
+       Policies: AWSLambdaBasicExecutionRole
+       Timeout: 30
++      Layers:
++#        Ref: CodeLayers
++        - !Ref MyServiceLayer
+       Environment:
+         Variables:
+           # Specify here variables for deployment,

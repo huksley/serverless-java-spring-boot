@@ -41,22 +41,5 @@ task buildZipFull(type: Zip) {
     }
    }
 }
- 
-task buildZipCode(type: Zip) {
-  baseName = "serverless-java-spring-boot-code"
-  from compileJava
-  from processResources
-}
-
-task buildLayerZip(type: Zip) {
-    baseName = "serverless-java-spring-boot-layer1"
-    into("java/lib") {
-        from(configurations.compileClasspath) {
-            exclude 'tomcat-embed-*'
-        }
-    }
-}
 
 build.dependsOn buildZipFull
-build.dependsOn buildZipCode
-build.dependsOn buildLayerZip
