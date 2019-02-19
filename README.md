@@ -1,33 +1,20 @@
-# my-service serverless API
+# Java Spring Boot Serverless application
 
-Generated using
-https://github.com/awslabs/aws-serverless-java-container/
-https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot
+Using (AWS Proxy wrappers](https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot) and  [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container) this application shows how you can easily build Java application and deploy it into AWS Lambda.
 
-## Generating this example
-
-This example were generated using following command
-
-```bash
-mvn archetype:generate \
- -DgroupId=my.service \
- -DartifactId=my-service \
- -Dversion=1.0-SNAPSHOT \
- -DarchetypeGroupId=com.amazonaws.serverless.archetypes \
- -DarchetypeArtifactId=aws-serverless-springboot2-archetype \
- -DarchetypeVersion=1.3
-```
+Also this application able to handle following AWS Events
+ 
+  * CloudWatch scheduled event
+  * SNS Topic message
+  * SQS queue message
+  
+  
+This project uses Java8, AWS CLI, AWS SAM CLI and Gradle to build, test and deploy code.
+Aslo consult [CircleCI](.circleci/config.yml) for instructions how to setup automated CI/CD build and deployment for this.
 
 ## Running locally
 
-To run function locally use
-
-```bash
-pip install --user aws-sam-cli
-./gradlew build -x test
-sam local start-api --debug --skip-pull-image -s public -t sam.yaml -p 3000 \
-    --parameter-overrides ParameterKey=CodeUri,ParameterValue=build/distributions/serverless-java-spring-boot.zip
-```
+To run function locally use `.\sam-local`
 
 Try API endpoint in terminal or browser
 
@@ -35,29 +22,30 @@ Try API endpoint in terminal or browser
 curl -s http://127.0.0.1:3000/ping | json_pp
 ```
 
-## Running in cloud
+## Running in AWS
 
 Deploy to cloud using
 ```bash
 ./deploy-to-aws
 ```
 
-Open URL provided in output, for example: https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping
+Open URL provided in output, for example: https://deadbeef.execute-api.eu-west-1.amazonaws.com/dev/ping
 
 ```bash
-curl -s https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping | json_pp
+curl -s https://deadbeef.execute-api.eu-west-1.amazonaws.com/dev/ping | json_pp
 {
    "pong" : "Hello, World!"
 }
 ```
 
-Bench time to run, notice that the first run with the same or more concurrent number of requests takes 6 seconds (i.e. spring boot launch time)
+Bench time to run, notice that the first run with the same or more concurrent number of requests takes 6 seconds (i.e. Spring boot launch time)
 ```bash
-ab -n 100 -c 20 https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping
+ab -n 100 -c 20 https://deadbeef.execute-api.eu-west-1.amazonaws.com/dev/ping
 ```
 
 ## Links
 
+  * https://github.com/awslabs/aws-serverless-java-container/
   * https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
   * https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events/src/main/java/com/amazonaws/services/lambda/runtime/events
 
@@ -115,57 +103,3 @@ You can use the [AWS CLI](https://aws.amazon.com/cli/) to quickly deploy your ap
 
 You will need an S3 bucket to store the artifacts for deployment. Once you have created the S3 bucket, run the following command from the project's root folder - where the `sam.yaml` file is located:
 
-```
-$ aws cloudformation package --template-file sam.yaml --output-template-file output-sam.yaml --s3-bucket <YOUR S3 BUCKET NAME>
-Uploading to xxxxxxxxxxxxxxxxxxxxxxxxxx  6464692 / 6464692.0  (100.00%)
-Successfully packaged artifacts and wrote output template to file output-sam.yaml.
-Execute the following command to deploy the packaged template
-aws cloudformation deploy --template-file /your/path/output-sam.yaml --stack-name <YOUR STACK NAME>
-```
-
-As the command output suggests, you can now use the cli to deploy the application. Choose a stack name and run the `aws cloudformation deploy` command from the output of the package command.
- 
-```
-$ aws cloudformation deploy --template-file output-sam.yaml --stack-name ServerlessSpringApi --capabilities CAPABILITY_IAM
-```
-
-Once the application is deployed, you can describe the stack to show the API endpoint that was created. The endpoint should be the `ServerlessSpringApi` key of the `Outputs` property:
-
-```
-$ aws cloudformation describe-stacks --stack-name ServerlessSpringApi
-{
-    "Stacks": [
-        {
-            "StackId": "arn:aws:cloudformation:us-west-2:xxxxxxxx:stack/ServerlessSpringApi/xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx", 
-            "Description": "AWS Serverless Spring API - com.amazonaws.serverless.archetypes::aws-serverless-springboot2-archetype", 
-            "Tags": [], 
-            "Outputs": [
-                {
-                    "Description": "URL for application",
-                    "ExportName": "MyServiceApi",
-                    "OutputKey": "MyServiceApi",
-                    "OutputValue": "https://xxxxxxx.execute-api.us-west-2.amazonaws.com/Prod/ping"
-                }
-            ], 
-            "CreationTime": "2016-12-13T22:59:31.552Z", 
-            "Capabilities": [
-                "CAPABILITY_IAM"
-            ], 
-            "StackName": "ServerlessSpringApi", 
-            "NotificationARNs": [], 
-            "StackStatus": "UPDATE_COMPLETE"
-        }
-    ]
-}
-
-```
-
-Copy the `OutputValue` into a browser or use curl to test your first request:
-
-```bash
-$ curl -s https://xxxxxxx.execute-api.us-west-2.amazonaws.com/Prod/ping | python -m json.tool
-
-{
-    "pong": "Hello, World!"
-}
-```
