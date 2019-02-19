@@ -1,0 +1,13 @@
+{
+    "version": "0",
+    "id": "2528c5e5-7feb-9a8d-9329-b445a222897f",
+    "detail-type": "Scheduled Event",
+    "source": "aws.events",
+    "account": "849707200000",
+    "time": "2019-02-19T08:59:04Z",
+    "region": "eu-west-1",
+    "resources": [
+        "arn:aws:events:eu-west-1:849707200000:rule/ServerlessSpringApi-MyServiceFunctionCheckWebsiteS-17EIBMQX0K6PN"
+    ],
+    "detail": {}
+}

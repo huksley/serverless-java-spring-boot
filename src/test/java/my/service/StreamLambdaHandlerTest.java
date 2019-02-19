@@ -63,6 +63,27 @@ public class StreamLambdaHandlerTest {
     }
 
     @Test
+    public void cloudWatch_scheduled_event_processed() throws IOException {
+        InputStream requestStream = getClass().getResourceAsStream("/scheduled-event.json");
+        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+        handle(requestStream, responseStream);
+    }
+
+    @Test
+    public void cloudWatch_sns_event_processed() throws IOException {
+        InputStream requestStream = getClass().getResourceAsStream("/sns-event.json");
+        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+        handle(requestStream, responseStream);
+    }
+
+    @Test
+    public void cloudWatch_sqs_event_processed() throws IOException {
+        InputStream requestStream = getClass().getResourceAsStream("/sqs-event.json");
+        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+        handle(requestStream, responseStream);
+    }
+
+    @Test
     public void invalidResource_streamRequest_responds404() {
         InputStream requestStream = new AwsProxyRequestBuilder("/pong", HttpMethod.GET)
                                             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)

@@ -1,0 +1,27 @@
+{
+    "Records": [
+        {
+            "EventSource": "aws:sns",
+            "EventVersion": "1.0",
+            "EventSubscriptionArn": "arn:aws:sns:eu-west-1:849707200000:test-topic:50c099cd-3d0d-4696-903d-cf808b3ce306",
+            "Sns": {
+                "Type": "Notification",
+                "MessageId": "15d202b9-ecca-5bf1-86aa-565c2460e18e",
+                "TopicArn": "arn:aws:sns:eu-west-1:849707200000:test-topic",
+                "Subject": null,
+                "Message": "hello world!",
+                "Timestamp": "2019-02-19T09:03:38.472Z",
+                "SignatureVersion": "1",
+                "Signature": "Gtt+vpFy8xd5jEBqChL3GU2DFS2WKFzMzmuUCcndy2y+UH4XJZ9TaU082rXtKZdNnhPuGrRygoOJkemLhh6q2kHu25FkvYBfkddBVCgr/wpgxnukqwlu3xYnmrtNqDJM8louZ38ZGk99miMf6NO1CloleIRc+EA1Vgfq7B/fE8lX1863VlLFViS36G86yUeFagNmPMnnPu7VFOi4RQRnzWa8/fKTGgvLMyGFesv6eWPFgDLEL6wGOpd/0gfxh6vq7sU9yuqQFkLvHTX5j6gf1+9Cfh1yxoJkz36NG3Oo17bIBiSsTqMl5A4Wc/3EKkGaPyjxPRPvxVof4ES0a6pPIA==",
+                "SigningCertUrl": "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-6aad65c2f9911b05cd53efda11f913f9.pem",
+                "UnsubscribeUrl": "https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:849707200000:test-topic:50c099cd-3d0d-4696-903d-cf808b3ce306",
+                "MessageAttributes": {
+                    "somekey": {
+                        "Type": "String",
+                        "Value": "dsdasdas"
+                    }
+                }
+            }
+        }
+    ]
+}

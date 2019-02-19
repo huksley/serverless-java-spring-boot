@@ -1,0 +1,28 @@
+{
+    "Records": [
+        {
+            "messageId": "72b03944-1af7-492b-aac9-412698960531",
+            "receiptHandle": "AQEBicU8TU0NRCELI9WEuVNN/2EU6G1KUJTSVO9BoDPAUvZk4yLsyMQiiKLf0LNmx7ETrdQ1CrwlwdE7JaBVGAcLWPrMCx8wZLxu6x8QtlITVIIAEIwjt+5/rnbmUMY0ajOMok80gO9SceLa+Zr1g3yZnjUMf3xNSGqynvooQkHFRAtSTKf0bkkagkKIHCDt5RghXUeIYruEZTStOm7RTVQwWxaCTQMvbBgNAZFG6j54qg1hCI9Cv9P95FH6Tt8yRDjf9Ad3s7Jykm0yy+IWfvpvHBoSelM03LrUUTX5E6lFpmTByIIE+fmamzeTZOevyNviiiMRbvqvDkDlrVs3M00zjiocX5jz+GVUmE5q0tOzwGYC4yWbcPKDSOc1hiRYUhbo",
+            "body": "Howdy?",
+            "attributes": {
+                "ApproximateReceiveCount": "1",
+                "SentTimestamp": "1550567133640",
+                "SenderId": "AIDAIEHDD23VAQL6ZVIAC",
+                "ApproximateFirstReceiveTimestamp": "1550567133641"
+            },
+            "messageAttributes": {
+                "someattr": {
+                    "stringValue": "someval",
+                    "stringListValues": [],
+                    "binaryListValues": [],
+                    "dataType": "String"
+                }
+            },
+            "md5OfBody": "47b68d3722ece13893e9c5fcb3cac906",
+            "md5OfMessageAttributes": "1e4b169c724503f3886d943e5bbe88e5",
+            "eventSource": "aws:sqs",
+            "eventSourceARN": "arn:aws:sqs:eu-west-1:849707200000:test-queue",
+            "awsRegion": "eu-west-1"
+        }
+    ]
+}
