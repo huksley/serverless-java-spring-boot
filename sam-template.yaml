@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
+# https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs
 Transform: AWS::Serverless-2016-10-31
 Description: AWS Serverless Spring Boot 2 API - my.service::my-service
 Globals:
@@ -9,6 +10,10 @@ Parameters:
   Stage:
     Type: String
     Default: dev
+  SNSTopic:
+    Type: String
+  SQSQueue:
+    Type: String
 
 Resources:
   ApiGatewayApi:
@@ -21,6 +26,7 @@ Resources:
           Ref: Stage
   MyServiceFunction:
     Type: AWS::Serverless::Function
+    FunctionName: "ServerlessSpringApi-MyServiceFunction"
     Properties:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
@@ -28,7 +34,7 @@ Resources:
       MemorySize: 2048
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
-      Environment: 
+      Environment:
         Variables:
           # Specify here variables for deployment,
           # override local using sam-local-env.json
@@ -45,7 +51,16 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: rate(5 minutes)
-
+        ReceiveFromSNS:
+          Type: SNS
+          Properties:
+            Topic:
+              Ref: SNSTopic
+        ReceiveFromQueue:
+          Type: SQS
+          Properties:
+            Queue:
+              Ref: SQSQueue
 Outputs:
   MyServiceApi:
     Description: URL for application

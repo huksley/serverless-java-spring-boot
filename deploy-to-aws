@@ -1,7 +1,7 @@
 #!/bin/bash
+set -e
+
 ./gradlew clean compileJava assemble build
-PACKAGE=build/distributions/serverless-java-spring-boot.zip
-NAME=`basename $PACKAGE`
 
 function parse_yaml {
    local prefix=$2
@@ -22,10 +22,11 @@ function parse_yaml {
 
 eval $(parse_yaml sam-template.yaml)
 
-#aws s3 cp $PACKAGE s3://sam-test-deploy-vi6vah6oom/$NAME
+aws cloudformation package --template-file sam-template.yaml --s3-bucket ${S3_BUCKET} --s3-prefix java --output-template-file sam-package.yaml
 
-aws cloudformation package --template-file sam-template.yaml --s3-bucket sam-test-deploy-vi6vah6oom --s3-prefix java --output-template-file sam-package.yaml
+PARAMS="SNSTopic=${SNS_TOPIC} SQSQueue=${SQS_QUEUE}"
 
-aws cloudformation deploy --template-file sam-package.yaml --stack-name ServerlessSpringApi --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file sam-package.yaml --stack-name ServerlessSpringApi --parameter-overrides ${PARAMS} --capabilities CAPABILITY_IAM
 
 aws cloudformation describe-stacks --stack-name ServerlessSpringApi
+
