@@ -6,12 +6,12 @@ jobs:
     working_directory: ~/serverless
     docker:
       # https://discuss.circleci.com/t/spring-boot-application-build-failed-due-to-test-failure/27687
-      - image: circleci/openjdk:8u171-jdk-node-browsers
+      - image: circleci/openjdk:8u171
     steps:
       - checkout
       - run: python --version
-      - run: pip install --user awscli
-      - run: pip install --user aws-sam-cli
+      - run: sudo pip install awscli
+      - run: sudo pip install aws-sam-cli
       - run: ./gradlew build
       - save_cache:
           key: docs-{{ checksum "build.gradle" }}
