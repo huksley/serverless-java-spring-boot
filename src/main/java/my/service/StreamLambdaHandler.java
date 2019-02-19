@@ -8,6 +8,7 @@ import com.amazonaws.serverless.proxy.model.AwsProxyRequest;
 import com.amazonaws.serverless.proxy.model.AwsProxyRequestContext;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.serverless.proxy.model.Headers;
+import com.amazonaws.serverless.proxy.model.MultiValuedTreeMap;
 import com.amazonaws.serverless.proxy.spring.SpringBootLambdaContainerHandler;
 import com.amazonaws.serverless.proxy.spring.SpringLambdaContainerHandler;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -31,13 +32,12 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +79,7 @@ public class StreamLambdaHandler implements RequestStreamHandler {
 
         AwsProxyRequest request = mapper.readValue(event, AwsProxyRequest.class);
         if (request.getHttpMethod() == null || "".equals(request.getHttpMethod())) {
-            log.info("Not an AWS HTTP event, skipping {}", request);
+            log.info("Parsing AWS event {}", event);
             Map<String, Object> raw = (Map<String, Object>) mapper.readValue(event, Map.class);
 
             // Peek inside one event
@@ -104,19 +104,19 @@ public class StreamLambdaHandler implements RequestStreamHandler {
                 log.warn("Can`t get event type: {}", raw);
             } else if ("aws.events".equals(eventSource)) {
                 ScheduledEvent ev = mapper.readValue(event, AnnotatedScheduledEvent.class);
-                request = convertToRequest(ev, context);
+                request = convertToRequest(ev, event, AnnotatedScheduledEvent.class.getName(), context);
                 log.info("Converted to {}", request);
                 AwsProxyResponse response = handler.proxy(request, context);
                 mapper.writeValue(outputStream, response);
             } else if ("aws:sns".equals(eventSource)) {
                 SNSEvent ev = mapper.readValue(event, AnnotatedSNSEvent.class);
-                request = convertToRequest(ev, context);
+                request = convertToRequest(ev, event, AnnotatedSNSEvent.class.getName(), context);
                 log.info("Converted to {}", request);
                 AwsProxyResponse response = handler.proxy(request, context);
                 mapper.writeValue(outputStream, response);
             } else if ("aws:sqs".equals(eventSource)) {
                 SQSEvent ev = mapper.readValue(event, AnnotatedSQSEvent.class);
-                request = convertToRequest(ev, context);
+                request = convertToRequest(ev, event, AnnotatedSQSEvent.class.getName(), context);
                 log.info("Converted to {}", request);
                 AwsProxyResponse response = handler.proxy(request, context);
                 mapper.writeValue(outputStream, response);
@@ -195,14 +195,20 @@ public class StreamLambdaHandler implements RequestStreamHandler {
     }
 
     /**
-     * FIXME: This conversion is application depended and should be configurable?
+     * Delivers all event to POST /event?type=className
      */
-    public static AwsProxyRequest convertToRequest(Object ev, Context context) {
+    public static AwsProxyRequest convertToRequest(Object ev, String json, String className, Context context) {
         AwsProxyRequest r = new AwsProxyRequest();
-        r.setPath("/ping");
-        r.setResource("/ping");
-        r.setHttpMethod("GET");
-        r.setMultiValueHeaders(new Headers());
+        r.setPath("/event");
+        r.setResource("/event");
+        r.setHttpMethod("POST");
+        MultiValuedTreeMap<String, String> q = new MultiValuedTreeMap<String, String>();
+        q.putSingle("type", className);
+        r.setBody(json);
+        r.setMultiValueQueryStringParameters(q);
+        Headers h = new Headers();
+        h.putSingle("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
+        r.setMultiValueHeaders(h);
         AwsProxyRequestContext rc = new AwsProxyRequestContext();
         rc.setIdentity(new ApiGatewayRequestIdentity());
         r.setRequestContext(rc);
