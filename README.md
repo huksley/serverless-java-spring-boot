@@ -1,5 +1,7 @@
 # Java Spring Boot Serverless application
 
+![Process](serverless-java-spring-boot.png)
+
 Using [AWS Proxy wrappers](https://github.com/awslabs/aws-serverless-java-container/wiki/Quick-start---Spring-Boot) and  [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container) this application shows how you can easily build Java application and deploy it into AWS Lambda.
 
 Also this application able to handle following AWS Events
