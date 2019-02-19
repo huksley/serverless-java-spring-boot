@@ -10,6 +10,7 @@ jobs:
     steps:
       - checkout
       - run: python --version
+      - run: sudo apt-get install -y python-pip libyaml-dev python-dev jq
       - run: sudo pip install awscli
       - run: sudo pip install aws-sam-cli
       - run: ./gradlew build
