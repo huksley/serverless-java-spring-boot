@@ -22,9 +22,21 @@ function parse_yaml {
 
 eval $(parse_yaml sam-template.yaml)
 
+LAYER_PACKAGE=build/distributions/serverless-java-spring-boot-layer1.zip
+LAYER_NAME=`basename $LAYER_PACKAGE`
+
+aws s3 cp $LAYER_PACKAGE s3://${S3_BUCKET}/$LAYER_NAME
+aws lambda publish-layer-version --layer-name serverless-java-spring-boot-layer1 \
+    --content S3Bucket=${S3_BUCKET},S3Key=${LAYER_NAME} \
+    --compatible-runtimes java8
+
+
+LAYER_ARN=`aws lambda list-layer-versions --layer-name serverless-java-spring-boot-layer1 --max-items 1 | jq ".LayerVersions[0].LayerVersionArn" -r`
+echo "JAR layer ARN: ${LAYER_ARN}"
+
 aws cloudformation package --template-file sam-template.yaml --s3-bucket ${S3_BUCKET} --s3-prefix java --output-template-file sam-package.yaml
 
-PARAMS="SNSTopic=${SNS_TOPIC} SQSQueue=${SQS_QUEUE}"
+PARAMS="SNSTopic=${SNS_TOPIC} SQSQueue=${SQS_QUEUE} CodeLayers=${LAYER_ARN}"
 
 aws cloudformation deploy --template-file sam-package.yaml --stack-name ServerlessSpringApi --parameter-overrides ${PARAMS} --capabilities CAPABILITY_IAM
 

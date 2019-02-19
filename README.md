@@ -56,6 +56,11 @@ Bench time to run, notice that the first run with the same or more concurrent nu
 ab -n 100 -c 20 https://uggwhkiale.execute-api.eu-west-1.amazonaws.com/Prod/ping
 ```
 
+## Links
+
+  * https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html
+  * https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-events/src/main/java/com/amazonaws/services/lambda/runtime/events
+
 ## Template (FIXME: remove template README)
 The my-service project, created with [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container).
 

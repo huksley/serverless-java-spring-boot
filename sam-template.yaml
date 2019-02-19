@@ -14,6 +14,8 @@ Parameters:
     Type: String
   SQSQueue:
     Type: String
+  CodeLayers:
+    Type: CommaDelimitedList
 
 Resources:
   ApiGatewayApi:
@@ -30,10 +32,12 @@ Resources:
     Properties:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
-      CodeUri: "build/distributions/serverless-java-spring-boot.zip"
+      CodeUri: "build/distributions/serverless-java-spring-boot-code.zip"
       MemorySize: 2048
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
+      Layers:
+        Ref: CodeLayers
       Environment:
         Variables:
           # Specify here variables for deployment,

@@ -25,14 +25,32 @@ dependencies {
   testCompile("junit:junit:4.12")
 }
 
-task buildZip(type: Zip) {
-  from compileJava
-  from processResources
-  into('lib') {
+task buildZipFull(type: Zip) {
+  baseName = "serverless-java-spring-boot"
+   from compileJava
+   from processResources
+   into('lib') {
     from(configurations.compileClasspath) {
       exclude 'tomcat-embed-*'
     }
-  }
+   }
+}
+ 
+task buildZipCode(type: Zip) {
+  baseName = "serverless-java-spring-boot-code"
+  from compileJava
+  from processResources
 }
 
-build.dependsOn buildZip
+task buildLayerZip(type: Zip) {
+    baseName = "serverless-java-spring-boot-layer1"
+    into("java/lib") {
+        from(configurations.compileClasspath) {
+            exclude 'tomcat-embed-*'
+        }
+    }
+}
+
+build.dependsOn buildZipFull
+build.dependsOn buildZipCode
+build.dependsOn buildLayerZip
