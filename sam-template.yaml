@@ -14,6 +14,8 @@ Parameters:
     Type: String
   SQSQueue:
     Type: String
+#  CodeLayers:
+#    Type: CommaDelimitedList
 
 Resources:
   ApiGatewayApi:
@@ -24,16 +26,27 @@ Resources:
       Variables:
         Stage:
           Ref: Stage
+  MyServiceLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: serverless-java-spring-boot-layer1
+      ContentUri: "build/distributions/serverless-java-spring-boot-layer1.zip"
+      CompatibleRuntimes:
+        - java8
+      RetentionPolicy: Retain
   MyServiceFunction:
     Type: AWS::Serverless::Function
     FunctionName: "ServerlessSpringApi-MyServiceFunction"
     Properties:
       Handler: my.service.StreamLambdaHandler::handleRequest
       Runtime: java8
-      CodeUri: "build/distributions/serverless-java-spring-boot.zip"
+      CodeUri: "build/distributions/serverless-java-spring-boot-code.zip"
       MemorySize: 2048
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 30
+      Layers:
+#        Ref: CodeLayers
+        - !Ref MyServiceLayer
       Environment:
         Variables:
           # Specify here variables for deployment,

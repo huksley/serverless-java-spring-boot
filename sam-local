@@ -1,4 +1,9 @@
 #!/bin/bash
 
-sam local start-api --debug --skip-pull-image -s public -t sam-template.yaml -p 3000 -n sam-local-env.json 
+LAYER_ARN=`aws lambda list-layer-versions --layer-name serverless-java-spring-boot-layer1 --max-items 1 | jq ".LayerVersions[0].LayerVersionArn" -r`
+echo "JAR layer ARN: ${LAYER_ARN}"
+
+PARAMS=ParameterKey=CodeLayers,ParameterValue=${LAYER_ARN}
+
+sam local start-api --debug --skip-pull-image -s public -t sam-template.yaml -p 3000 -n sam-local-env.json --parameter-overrides ${PARAMS}
 
