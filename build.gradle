@@ -24,7 +24,7 @@ dependencies {
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('io.symphonia:lambda-logging:1.0.1:no-config')
   // For deserializing various AWS events
-  compile('com.amazonaws:aws-lambda-java-events:2.2.5')
+  compile('com.amazonaws:aws-lambda-java-events:2.2.6')
   // For marshalling/unmarshalling JodaTime
   compile('com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.7')
 
